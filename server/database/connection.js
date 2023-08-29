@@ -1,12 +1,31 @@
-const pool = require('pg').Pool
-require('dotenv').config()
+const sequelize = require("./sequelize");
 
-const Pool = new pool({
-    host: 'localhost',
-    port: 5432,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    database: process.env.PG_DATABASE
-})
+/**
+ * import all models
+ */
+const Budget = require("../models/budgetModel");
+const Category = require("../models/categoryModel");
+const Transaction = require("../models/transactionModel");
 
-module.exports = Pool
+const connect = async () => {
+  /**
+   * define all associations
+   */
+  Budget.hasMany(Transaction);
+  Transaction.belongsTo(Budget);
+  Transaction.belongsTo(Category);
+
+  /**
+   * authenticate database connection
+   */
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log("Connection has been established successfully.");
+    })
+    .catch((error) => {
+      console.error("Unable to connect to the database:", error);
+    });
+};
+
+module.exports = connect;

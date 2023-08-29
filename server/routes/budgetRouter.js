@@ -1,9 +1,11 @@
-const router = require('express').Router();
+const router = require("express").Router();
 
-const { getBudget, setBudget } = require('../controllers/budgetController');
+const extractMonth = require("../middleware/extractMonth");
 
-router.get('/:id', getBudget);
+const { getBudget, setBudget } = require("../controllers/budgetController");
 
-router.post('/:id', setBudget);
+router.get("/:id", extractMonth, getBudget);
+
+router.post("/:id", extractMonth, setBudget);
 
 module.exports = router;

@@ -1,118 +1,94 @@
-const Pool = require("../database/connection");
+const Transaction = require("../models/transactionModel");
+const Budget = require("../models/budgetModel");
+const Category = require("../models/categoryModel");
 
 module.exports = {
-    getTransactions: async (req, res) => {
-        try {
-            /**
-             * 1. Get the budget id from the budget table
-             * 2. Get the transactions from the transactions table using the budget id
-             * 3. Return the transactions
-             */
+  getTransactions: async (req, res) => {
+    try {
+      const { budgetId } = req.body;
 
-            const { budgetId } = req.body;
+      const data = await Transaction.findAll({
+        where: {
+          budgetId,
+        },
+        include: [
+          {
+            model: Category,
+          },
+        ],
+      });
 
-            const transactions = await Pool.query(
-                "SELECT * FROM transaction WHERE budget_id = $1",
-                [budgetId]
-            );
+      return res.status(200).json({ transactions: data });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
 
-            if (transactions.rows.length === 0) {
-                return res.status(404).json({ message: "No transactions found" });
-            }
+  addTransaction: async (req, res) => {
+    try {
+      const { budgetId, amount, remakrs, type, categoryId, date } = req.body;
 
-            return res.status(200).json({ transactions: transactions.rows });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-    },
+      const budget = await Budget.findByPk(budgetId);
 
-    addTransaction: async (req, res) => {
-        try {
-            const { budgetId, amount, remakrs, type, categoryId } = req.body;
+      /**
+       * If budget is not found, create a new budget with the given id
+       * This is to make sure that the budget exists before adding a transaction
+       */
+      if (!budget) {
+        const year = budgetId.substring(budgetId.length - 4);
+        const month = budgetId.substring(0, budgetId.length - 4);
 
-            const checkAvailability = await Pool.query(
-                "SELECT * FROM budget WHERE id = $1",
-                [budgetId]
-            );
+        await Budget.create({ id: budgetId, year, month, estimated_budget: 0 });
+      }
 
+      const data = await Transaction.create({
+        budgetId,
+        amount,
+        remakrs,
+        type,
+        categoryId,
+        date,
+      });
 
-            if (checkAvailability.rows.length === 0) {
-                /**
-                 * if budget does not exist, create a new budget with the 0 estimated budget
-                 * this is to prevent the user from adding transactions without setting up a budget first
-                 */
-                const month = budgetId.slice(0, 2);
-                const year = budgetId.slice(2, 6);
-                const estimated_budget = 0;
-                await Pool.query(
-                    "INSERT INTO budget (id, month, year, estimated_budget, timestamp) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-                    [budgetId, month, year, estimated_budget, new Date()]
-                );
-            }
+      return res.status(201).json({ transaction: data });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
 
-            const { rows } = await Pool.query(
-                "INSERT INTO transaction (budget_id, category_id, amount, remakrs, type, timestamp) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-                [budgetId, categoryId, amount, remakrs, type, new Date()]
-            );
+  updateTransaction: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { amount, remakrs, categoryId } = req.body;
 
-            if (rows.length === 0) {
-                return res.status(500).json({ message: "Internal Server Error" });
-            }
+      const data = await Transaction.update(
+        {
+          amount,
+          remakrs,
+          categoryId,
+        },
+        { where: { id } }
+      );
 
-            return res.status(200).json({
-                message: "Transaction added successfully",
-                transaction: rows[0],
-            });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-    },
+      return res.status(200).json({ transaction: data });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
 
-    updateTransaction: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const { amount, remakrs, categoryId } = req.body;
+  deleteTransaction: async (req, res) => {
+    try {
+      const { id } = req.params;
 
-            const { rows } = await Pool.query(
-                "UPDATE transaction SET amount = $1, remakrs = $2, category_id = $3 WHERE id = $4 RETURNING *",
-                [amount, remakrs, categoryId, id]
-            );
+      const data = await Transaction.destroy({ where: { id } });
 
-            if (rows.length === 0) {
-                return res.status(404).json({ message: "Transaction not found" });
-            }
-
-            return res.status(200).json({
-                message: "Transaction updated successfully",
-                transaction: rows[0],
-            });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-    },
-
-    deleteTransaction: async (req, res) => {
-        try {
-            const { id } = req.params;
-
-            const { rows } = await Pool.query(
-                "DELETE FROM transaction WHERE id = $1 RETURNING *",
-                [id]
-            );
-
-            if (rows.length === 0) {
-                return res.status(404).json({ message: "Transaction not found" });
-            }
-
-            return res
-                .status(200)
-                .json({ message: "Transaction deleted successfully" });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-    },
+      return res.status(200).json({ transaction: data });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
 };
