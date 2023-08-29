@@ -5,11 +5,11 @@ CREATE TABLE budget (
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
     estimated_budget INTEGER NOT NULL,
-    timestamp INTEGER NOT NULL
+    timestamp VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE category (
-    id PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL
 );
 
@@ -20,7 +20,7 @@ CREATE TABLE transaction (
     amount INTEGER NOT NULL,
     remakrs VARCHAR(255),
     type VARCHAR(255) NOT NULL,
-    timestamp INTEGER NOT NULL,
+    timestamp VARCHAR(255) NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category(id),
     FOREIGN KEY (budget_id) REFERENCES budget(id)
 );

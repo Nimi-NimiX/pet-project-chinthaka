@@ -4,12 +4,11 @@ module.exports = {
 
     getBudget: async (req, res) => {
         try {
-            const { month, year } = req.body;
+            const { id } = req.params;
 
             /**
              * check if budget exists for the given month and year
              */
-            const id = `${month}${year}`
             const { rows } = await Pool.query(
                 "SELECT * FROM budget WHERE id = $1",
                 [id]
@@ -33,19 +32,21 @@ module.exports = {
 
     setBudget: async (req, res) => {
         try {
-            const { month, year, estimated_budget } = req.body;
-            const id = `${month}${year}`
+            const { id } = req.params;
+            const { estimated_budget } = req.body;
+            const month = id.slice(0, 2);
+            const year = id.slice(2, 6);
 
             /**
              * check if budget already exists for the given month and year before trying to insert
              * if it does, update instead else insert
              */
-            const { checkAvailability } = await Pool.query(
+            const checkAvailability = await Pool.query(
                 "SELECT * FROM budget WHERE id = $1",
                 [id]
             );
 
-            if (checkAvailability.length > 0) {
+            if (checkAvailability.rows.length > 0) {
                 const { rows } = await Pool.query(
                     "UPDATE budget SET estimated_budget = $1 WHERE id = $2 RETURNING *",
                     [estimated_budget, id]
@@ -59,8 +60,8 @@ module.exports = {
              */
 
             const { rows } = await Pool.query(
-                "INSERT INTO budget (id, month, year, estimated_budget) VALUES ($1, $2, $3) RETURNING *",
-                [id, month, year, estimated_budget]
+                "INSERT INTO budget (id, month, year, estimated_budget, timestamp) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+                [id, month, year, estimated_budget, new Date()]
             );
 
             return res.status(201).json({ message: "Budget successfully set", budget: rows[0] });

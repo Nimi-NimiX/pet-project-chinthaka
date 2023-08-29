@@ -11,16 +11,16 @@ module.exports = {
 
             const { budgetId } = req.body;
 
-            const { transactions } = await Pool.query(
+            const transactions = await Pool.query(
                 "SELECT * FROM transaction WHERE budget_id = $1",
                 [budgetId]
             );
 
-            if (transactions.length === 0) {
+            if (transactions.rows.length === 0) {
                 return res.status(404).json({ message: "No transactions found" });
             }
 
-            return res.status(200).json({ transactions });
+            return res.status(200).json({ transactions: transactions.rows });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: "Internal Server Error" });
@@ -31,12 +31,13 @@ module.exports = {
         try {
             const { budgetId, amount, remakrs, type, categoryId } = req.body;
 
-            const { checkAvailability } = await Pool.query(
+            const checkAvailability = await Pool.query(
                 "SELECT * FROM budget WHERE id = $1",
                 [budgetId]
             );
 
-            if (checkAvailability.length === 0) {
+
+            if (checkAvailability.rows.length === 0) {
                 /**
                  * if budget does not exist, create a new budget with the 0 estimated budget
                  * this is to prevent the user from adding transactions without setting up a budget first
@@ -45,8 +46,8 @@ module.exports = {
                 const year = budgetId.slice(2, 6);
                 const estimated_budget = 0;
                 await Pool.query(
-                    "INSERT INTO budget (id, month, year, estimated_budget) VALUES ($1, $2, $3) RETURNING *",
-                    [budgetId, month, year, estimated_budget]
+                    "INSERT INTO budget (id, month, year, estimated_budget, timestamp) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+                    [budgetId, month, year, estimated_budget, new Date()]
                 );
             }
 
@@ -71,11 +72,12 @@ module.exports = {
 
     updateTransaction: async (req, res) => {
         try {
-            const { id, amount, remakrs, categoryId } = req.body;
+            const { id } = req.params;
+            const { amount, remakrs, categoryId } = req.body;
 
             const { rows } = await Pool.query(
-                "UPDATE transactions SET category_id = $1, amount = $2, remakrs = $3, WHERE id = $4 RETURNING *",
-                [categoryId, amount, remakrs, id]
+                "UPDATE transaction SET amount = $1, remakrs = $2, category_id = $3 WHERE id = $4 RETURNING *",
+                [amount, remakrs, categoryId, id]
             );
 
             if (rows.length === 0) {
@@ -94,10 +96,10 @@ module.exports = {
 
     deleteTransaction: async (req, res) => {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
 
             const { rows } = await Pool.query(
-                "DELETE FROM transactions WHERE id = $1 RETURNING *",
+                "DELETE FROM transaction WHERE id = $1 RETURNING *",
                 [id]
             );
 
