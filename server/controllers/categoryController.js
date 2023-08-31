@@ -1,6 +1,6 @@
 const Category = require("../models/categoryModel");
 
-module.exports = {
+const categoryController = {
   addCategory: async (req, res) => {
     try {
       const { name } = req.body;
@@ -43,3 +43,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = categoryController;

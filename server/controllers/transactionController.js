@@ -2,7 +2,7 @@ const Transaction = require("../models/transactionModel");
 const Budget = require("../models/budgetModel");
 const Category = require("../models/categoryModel");
 
-module.exports = {
+const transactionController = {
   getTransactions: async (req, res) => {
     try {
       const { budgetId } = req.body;
@@ -92,3 +92,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = transactionController;

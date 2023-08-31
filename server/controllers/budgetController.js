@@ -2,7 +2,7 @@ const budget = require("../models/budgetModel");
 const Transaction = require("../models/transactionModel");
 const Category = require("../models/categoryModel");
 
-module.exports = {
+const budgetController = {
   getBudget: async (req, res) => {
     try {
       const { id } = req.params;
@@ -36,11 +36,9 @@ module.exports = {
           estimated_budget: 0,
         });
 
-        return res
-          .status(200)
-          .json({
-            budget: { id, month, year, estimated_budget: 0, transactions: [] },
-          });
+        return res.status(200).json({
+          budget: { id, month, year, estimated_budget: 0, transactions: [] },
+        });
       }
 
       return res.status(200).json({ budget: data });
@@ -69,3 +67,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = budgetController;
