@@ -1,12 +1,19 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../database/sequelize");
+const { DataTypes, Model } = require('sequelize');
+const sequelize = require('../database/sequelize');
 
-const Budget = sequelize.define(
-  "budget",
+class Budget extends Model {
+  static associate(models) {
+    this.hasMany(models.Transaction, {
+      foreignKey: 'budgetId',
+      sourceKey: 'id',
+    });
+  }
+}
+
+Budget.init(
   {
     id: {
       type: DataTypes.STRING,
-      allowNull: false,
       primaryKey: true,
     },
     month: {
@@ -17,13 +24,15 @@ const Budget = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    estimated_budget: {
+    estimatedBudget: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
   {
-    tableName: "budgets",
+    sequelize,
+    tableName: 'budget',
+    underscored: true,
   }
 );
 

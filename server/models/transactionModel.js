@@ -1,13 +1,25 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../database/sequelize");
+const { DataTypes, Model } = require('sequelize');
+const sequelize = require('../database/sequelize');
 
-const Transaction = sequelize.define(
-  "transaction",
+class Transaction extends Model {
+  static associate(models) {
+    this.belongsTo(models.Budget, {
+      foreignKey: 'budgetId',
+      targetKey: 'id',
+    });
+
+    this.belongsTo(models.Category, {
+      foreignKey: 'categoryId',
+      targetKey: 'id',
+    });
+  }
+}
+
+Transaction.init(
   {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      allowNull: false,
       primaryKey: true,
     },
     amount: {
@@ -28,7 +40,9 @@ const Transaction = sequelize.define(
     },
   },
   {
-    tableName: "transactions",
+    sequelize,
+    tableName: 'transaction',
+    underscored: true,
   }
 );
 
