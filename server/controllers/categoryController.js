@@ -1,51 +1,47 @@
-const Pool = require("../database/connection");
+const Category = require("../models/categoryModel");
 
-module.exports = {
+const categoryController = {
+  addCategory: async (req, res) => {
+    try {
+      const { name } = req.body;
 
-    addCategory: async (req, res) => {
-        try {
+      /**
+       * Check if category already exists in database
+       */
 
-            const { name } = req.body;
+      const category = await Category.findOne({ where: { name } });
 
-            /**
-             * Trying to insert category into database and return the inserted category
-             */
-            const { rows } = await Pool.query(
-                "INSERT INTO category (category_name) VALUES ($1) RETURNING *",
-                [name]
-            );
+      if (category) {
+        return res.status(400).json({ message: "Category already exists" });
+      }
 
-            if (rows.length === 0) {
-                res.status(500).json({ message: "Internal server error" });
-            }
+      /**
+       * If category does not exist, create a new category
+       */
 
-            res.status(200).json({ message: "Category successfully added", category: rows[0] });
+      const data = await Category.create({ name });
 
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: "Internal server error" });
-        }
-    },
-
-    getCategories: async (req, res) => {
-        try {
-
-            /**
-             * Return all categories from database 
-             */
-            const { rows } = await Pool.query(
-                "SELECT * FROM category"
-            );
-
-            if (rows.length === 0) {
-                res.status(404).json({ message: "No categories found" });
-            }
-
-            res.status(200).json({ categories: rows });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: "Internal server error" });
-        }
+      res.status(201).json({ category: data });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
     }
+  },
 
+  getCategories: async (req, res) => {
+    try {
+      /**
+       * Return all categories from database
+       */
+
+      const data = await Category.findAll();
+
+      res.status(200).json({ categories: data });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
 };
+
+module.exports = categoryController;
