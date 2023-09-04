@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../database/sequelize');
+const Budget = require('./budgetModel');
 
 class Transaction extends Model {
   static associate(models) {
@@ -45,5 +46,51 @@ Transaction.init(
     underscored: true,
   }
 );
+
+// this hook will be called before creating a new transaction
+Transaction.addHook('afterCreate', async (transaction) => {
+  const budget = await Budget.findByPk(transaction.budgetId);
+
+  if (transaction.type === 'income') {
+    budget.income = budget.income + transaction.amount;
+  } else if (transaction.type === 'expense') {
+    budget.expense = budget.expense + transaction.amount;
+  }
+
+  budget.balance = budget.income - budget.expense;
+  await budget.save();
+});
+
+// this hook will be called before updating a transaction
+Transaction.addHook('afterUpdate', async (transaction) => {
+  const budget = await Budget.findByPk(transaction.budgetId);
+
+  // get the difference between the previous amount and the new amount
+  const amountDifference =
+    transaction.amount - transaction._previousDataValues.amount;
+
+  if (transaction.type === 'income') {
+    budget.income = budget.income + amountDifference;
+  } else if (transaction.type === 'expense') {
+    budget.expense = budget.expense + amountDifference;
+  }
+
+  budget.balance = budget.income - budget.expense;
+  await budget.save();
+});
+
+// this hook will be called before deleting a transaction
+Transaction.addHook('afterDestroy', async (transaction) => {
+  const budget = await Budget.findByPk(transaction.budgetId);
+
+  if (transaction.type === 'income') {
+    budget.income = budget.income - transaction.amount;
+  } else if (transaction.type === 'expense') {
+    budget.expense = budget.expense - transaction.amount;
+  }
+
+  budget.balance = budget.income - budget.expense;
+  await budget.save();
+});
 
 module.exports = Transaction;

@@ -1,6 +1,6 @@
-const budget = require("../models/budgetModel");
-const Transaction = require("../models/transactionModel");
-const Category = require("../models/categoryModel");
+const budget = require('../models/budgetModel');
+const Transaction = require('../models/transactionModel');
+const Category = require('../models/categoryModel');
 
 const budgetController = {
   getBudget: async (req, res) => {
@@ -26,44 +26,42 @@ const budgetController = {
 
       /**
        * If budget is not found, create a new budget with the given id and return it
-       * with estimated_budget = 0
+       * with estimatedBudget = 0
        */
       if (!data) {
-        await budget.create({
+        const created = await budget.create({
           id,
           month,
           year,
-          estimated_budget: 0,
+          estimatedBudget: 0,
         });
 
         return res.status(200).json({
-          budget: { id, month, year, estimated_budget: 0, transactions: [] },
+          budget: { created },
         });
       }
 
       return res.status(200).json({ budget: data });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: 'Internal server error' });
     }
   },
 
   setBudget: async (req, res) => {
     try {
       const { id } = req.params;
-      const { estimated_budget, month, year } = req.body;
+      const { estimatedBudget } = req.body;
 
-      const data = await budget.createOrUpdate({
-        id,
-        month,
-        year,
-        estimated_budget,
-      });
+      const updated = await budget.update(
+        { estimatedBudget },
+        { where: { id } }
+      );
 
-      return res.status(200).json({ budget: data });
+      return res.status(200).json({ budget: updated });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: 'Internal server error' });
     }
   },
 };

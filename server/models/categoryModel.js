@@ -21,6 +21,10 @@ Category.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    type: {
+      type: DataTypes.ENUM('income', 'expense'),
+      allowNull: false,
+    },
   },
   {
     sequelize,
