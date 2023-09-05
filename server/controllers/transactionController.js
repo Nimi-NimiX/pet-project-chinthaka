@@ -1,6 +1,7 @@
 const Transaction = require('../models/transactionModel');
 const Budget = require('../models/budgetModel');
 const Category = require('../models/categoryModel');
+const TransactionTypes = require('../constants/types');
 
 const transactionController = {
   getTransactions: async (req, res) => {
@@ -46,7 +47,10 @@ const transactionController = {
         budgetId,
         amount,
         remarks,
-        type,
+        type:
+          type === 'income'
+            ? TransactionTypes.INCOME
+            : TransactionTypes.EXPENSE,
         categoryId,
         date,
       });

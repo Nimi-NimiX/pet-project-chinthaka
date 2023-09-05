@@ -1,6 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../database/sequelize');
 const Budget = require('./budgetModel');
+const TransactionTypes = require('../constants/types');
 
 class Transaction extends Model {
   static associate(models) {
@@ -32,8 +33,9 @@ Transaction.init(
       allowNull: true,
     },
     type: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.ENUM,
+      values: Object.values(TransactionTypes),
+      defaultValue: TransactionTypes.EXPENSE,
     },
     date: {
       type: DataTypes.DATE,
@@ -51,9 +53,9 @@ Transaction.init(
 Transaction.addHook('afterCreate', async (transaction) => {
   const budget = await Budget.findByPk(transaction.budgetId);
 
-  if (transaction.type === 'income') {
+  if (transaction.type === TransactionTypes.INCOME) {
     budget.income = budget.income + transaction.amount;
-  } else if (transaction.type === 'expense') {
+  } else if (transaction.type === TransactionTypes.EXPENSE) {
     budget.expense = budget.expense + transaction.amount;
   }
 
@@ -69,9 +71,9 @@ Transaction.addHook('afterUpdate', async (transaction) => {
   const amountDifference =
     transaction.amount - transaction._previousDataValues.amount;
 
-  if (transaction.type === 'income') {
+  if (transaction.type === TransactionTypes.INCOME) {
     budget.income = budget.income + amountDifference;
-  } else if (transaction.type === 'expense') {
+  } else if (transaction.type === TransactionTypes.EXPENSE) {
     budget.expense = budget.expense + amountDifference;
   }
 
@@ -83,9 +85,9 @@ Transaction.addHook('afterUpdate', async (transaction) => {
 Transaction.addHook('afterDestroy', async (transaction) => {
   const budget = await Budget.findByPk(transaction.budgetId);
 
-  if (transaction.type === 'income') {
+  if (transaction.type === TransactionTypes.INCOME) {
     budget.income = budget.income - transaction.amount;
-  } else if (transaction.type === 'expense') {
+  } else if (transaction.type === TransactionTypes.EXPENSE) {
     budget.expense = budget.expense - transaction.amount;
   }
 
