@@ -1,6 +1,5 @@
-const Transaction = require('../models/transaction');
-const Budget = require('../models/budget');
-const Category = require('../models/category');
+const Budget = require('../repositories/budget');
+const Transaction = require('../repositories/transaction');
 const TransactionTypes = require('../constants/types');
 
 const transactionController = {
@@ -8,16 +7,7 @@ const transactionController = {
     try {
       const { budgetId } = req.body;
 
-      const data = await Transaction.findAll({
-        where: {
-          budgetId,
-        },
-        include: [
-          {
-            model: Category,
-          },
-        ],
-      });
+      const data = await Transaction.findAllByBudgetId(budgetId);
 
       return res.status(200).json({ transactions: data });
     } catch (error) {
@@ -30,7 +20,7 @@ const transactionController = {
     try {
       const { budgetId, amount, remarks, type, categoryId, date } = req.body;
 
-      const budget = await Budget.findByPk(budgetId);
+      const budget = await Budget.getById(budgetId);
 
       /**
        * If budget is not found, create a new budget with the given id
@@ -47,10 +37,7 @@ const transactionController = {
         budgetId,
         amount,
         remarks,
-        type:
-          type === 'income'
-            ? TransactionTypes.INCOME
-            : TransactionTypes.EXPENSE,
+        type: type === 'I' ? TransactionTypes.INCOME : TransactionTypes.EXPENSE,
         categoryId,
         date,
       });
@@ -67,14 +54,11 @@ const transactionController = {
       const { id } = req.params;
       const { amount, remarks, categoryId } = req.body;
 
-      const data = await Transaction.update(
-        {
-          amount,
-          remarks,
-          categoryId,
-        },
-        { where: { id } }
-      );
+      const data = await Transaction.update(id, {
+        amount,
+        remarks,
+        categoryId,
+      });
 
       return res.status(200).json({ transaction: data });
     } catch (error) {
@@ -87,7 +71,11 @@ const transactionController = {
     try {
       const { id } = req.params;
 
-      const data = await Transaction.destroy({ where: { id } });
+      const data = await Transaction.delete(id);
+
+      if (!data) {
+        return res.status(404).json({ message: 'Transaction not found' });
+      }
 
       return res.status(200).json({ transaction: data });
     } catch (error) {

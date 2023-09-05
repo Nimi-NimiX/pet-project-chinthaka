@@ -1,6 +1,4 @@
-const budget = require('../models/budget');
-const Transaction = require('../models/transaction');
-const Category = require('../models/category');
+const BudgetRepo = require('../repositories/budget');
 
 const budgetController = {
   getBudget: async (req, res) => {
@@ -11,25 +9,14 @@ const budgetController = {
       /**
        * Find budget by id and include all transactions and their categories
        */
-      const data = await budget.findByPk(id, {
-        include: [
-          {
-            model: Transaction,
-            include: [
-              {
-                model: Category,
-              },
-            ],
-          },
-        ],
-      });
+      const data = await BudgetRepo.getById(id);
 
       /**
        * If budget is not found, create a new budget with the given id and return it
        * with estimatedBudget = 0
        */
       if (!data) {
-        const created = await budget.create({
+        const created = await BudgetRepo.create({
           id,
           month,
           year,
@@ -37,7 +24,7 @@ const budgetController = {
         });
 
         return res.status(200).json({
-          budget: { created },
+          budget: created,
         });
       }
 
@@ -53,10 +40,7 @@ const budgetController = {
       const { id } = req.params;
       const { estimatedBudget } = req.body;
 
-      const updated = await budget.update(
-        { estimatedBudget },
-        { where: { id } }
-      );
+      const updated = await BudgetRepo.updateById(id, estimatedBudget);
 
       return res.status(200).json({ budget: updated });
     } catch (error) {

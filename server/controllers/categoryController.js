@@ -1,4 +1,4 @@
-const Category = require('../models/category');
+const Category = require('../repositories/category');
 
 const categoryController = {
   getCategories: async (req, res) => {
@@ -7,7 +7,7 @@ const categoryController = {
        * Return all categories from database
        */
 
-      const data = await Category.findAll();
+      const data = await Category.getAll();
 
       res.status(200).json({ categories: data });
     } catch (error) {
