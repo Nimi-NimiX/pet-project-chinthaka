@@ -1,6 +1,6 @@
-const budget = require('../models/budgetModel');
-const Transaction = require('../models/transactionModel');
-const Category = require('../models/categoryModel');
+const budget = require('../models/budget');
+const Transaction = require('../models/transaction');
+const Category = require('../models/category');
 
 const budgetController = {
   getBudget: async (req, res) => {

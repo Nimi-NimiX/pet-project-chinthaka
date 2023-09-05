@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../database/sequelize');
-const Budget = require('./budgetModel');
+const Budget = require('./budget');
 const TransactionTypes = require('../constants/types');
 
 class Transaction extends Model {

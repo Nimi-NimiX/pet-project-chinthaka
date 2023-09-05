@@ -1,6 +1,6 @@
-const Transaction = require('../models/transactionModel');
-const Budget = require('../models/budgetModel');
-const Category = require('../models/categoryModel');
+const Transaction = require('../models/transaction');
+const Budget = require('../models/budget');
+const Category = require('../models/category');
 const TransactionTypes = require('../constants/types');
 
 const transactionController = {

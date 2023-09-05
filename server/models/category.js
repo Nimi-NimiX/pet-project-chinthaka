@@ -22,7 +22,7 @@ Category.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    type: {
+    categoryType: {
       type: DataTypes.ENUM,
       values: Object.values(CategoryTypes),
       defaultValue: CategoryTypes.EXPENSE,
