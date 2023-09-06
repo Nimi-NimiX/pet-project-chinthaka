@@ -4,9 +4,9 @@ import styled from '@emotion/styled';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Store } from '../../utils/store';
-import { Button, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Typography } from '@mui/material';
 import Budget from '../../APIs/budget';
+import AddTransaction from './TransactoinModel';
 
 function Navbar() {
   const store = Store.useContainer();
@@ -30,12 +30,15 @@ function Navbar() {
   ];
 
   useEffect(() => {
-    const getData = () => {
-      Budget.get(`${month}${year}`).then((data) => {
-        store.setBudget(data);
-      });
+    const getBudget = async () => {
+      try {
+        const data = await Budget.get(`${month}${year}`);
+        store.setTransactions(data.budget?.Transactions || []);
+        store.setBudget(data.budget);
+      } catch (error) {}
     };
-    getData();
+
+    getBudget();
   }, [month, year]);
 
   return (
@@ -51,18 +54,9 @@ function Navbar() {
         </Typography>
 
         {/* 
-        Add transaction button
+        Add transaction button with modal
         */}
-        <Box sx={{ position: 'absolute', right: '20px' }}>
-          <Button
-            variant="contained"
-            color="inherit"
-            sx={{ marginRight: '10px' }}
-          >
-            <AddIcon sx={{ marginRight: '5px' }} />
-            Add Transaction
-          </Button>
-        </Box>
+        <AddTransaction />
 
         {/*
         Month picker 
