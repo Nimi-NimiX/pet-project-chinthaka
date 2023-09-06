@@ -28,6 +28,18 @@ Budget.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    income: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    expense: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    balance: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
   },
   {
     sequelize,

@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../database/sequelize');
+const CategoryTypes = require('../constants/types');
 
 class Category extends Model {
   static associate(models) {
@@ -20,6 +21,11 @@ Category.init(
     categoryName: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    categoryType: {
+      type: DataTypes.ENUM,
+      values: Object.values(CategoryTypes),
+      defaultValue: CategoryTypes.EXPENSE,
     },
   },
   {

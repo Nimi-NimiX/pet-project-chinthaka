@@ -1,5 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../database/sequelize');
+const TransactionTypes = require('../constants/types');
+const TransactionService = require('../services/transaction');
 
 class Transaction extends Model {
   static associate(models) {
@@ -31,8 +33,9 @@ Transaction.init(
       allowNull: true,
     },
     type: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.ENUM,
+      values: Object.values(TransactionTypes),
+      defaultValue: TransactionTypes.EXPENSE,
     },
     date: {
       type: DataTypes.DATE,
@@ -43,6 +46,17 @@ Transaction.init(
     sequelize,
     tableName: 'transaction',
     underscored: true,
+    hooks: {
+      afterCreate: async (transaction) => {
+        await TransactionService.create(transaction);
+      },
+      afterUpdate: async (transaction) => {
+        await TransactionService.update(transaction);
+      },
+      afterDestroy: async (transaction) => {
+        await TransactionService.delete(transaction);
+      },
+    },
   }
 );
 
