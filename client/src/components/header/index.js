@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import styled from '@emotion/styled';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -6,6 +6,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Store } from '../../utils/store';
 import { Button, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import Budget from '../../APIs/budget';
 
 function Navbar() {
   const store = Store.useContainer();
@@ -27,6 +28,15 @@ function Navbar() {
     'November',
     'December',
   ];
+
+  useEffect(() => {
+    const getData = () => {
+      Budget.get(`${month}${year}`).then((data) => {
+        store.setBudget(data);
+      });
+    };
+    getData();
+  }, [month, year]);
 
   return (
     <>
