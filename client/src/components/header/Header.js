@@ -6,7 +6,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Store } from '../../utils/store';
 import { Typography } from '@mui/material';
 import Budget from '../../APIs/budget';
-import AddTransaction from './TransactoinModel';
+import AddTransaction from './TransactionModel';
 import * as constants from '../../constants';
 
 function Navbar() {
