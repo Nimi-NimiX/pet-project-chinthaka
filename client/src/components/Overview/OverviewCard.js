@@ -2,7 +2,7 @@ import { Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
 
-function OverviewCard({ title, amount, editable = false }) {
+function OverviewCard({ title, amount, editable = false, onEdit }) {
   return (
     <Box sx={boxStyles}>
       <Typography
@@ -20,6 +20,7 @@ function OverviewCard({ title, amount, editable = false }) {
           variant="outlined"
           size="small"
           color="inherit"
+          onClick={onEdit}
         >
           Edit
         </Button>

@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box } from '@mui/system';
 import { Store } from '../../utils/store';
 import OverviewCard from './OverviewCard';
+import SetBudgetModel from './SetBudgetModel';
 
 const Overiew = () => {
   // initialize store
   const store = Store.useContainer();
+
+  // states and handlers for modal
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <>
@@ -17,8 +23,11 @@ const Overiew = () => {
           title={'Estimated Budget'}
           amount={store.budget.estimatedBudget || 0}
           editable
+          onEdit={() => handleOpen()}
         />
       </Box>
+      {/* Modal for setting budget */}
+      <SetBudgetModel open={open} handleClose={handleClose} />
     </>
   );
 };
