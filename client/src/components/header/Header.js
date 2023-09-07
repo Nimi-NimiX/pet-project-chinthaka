@@ -7,27 +7,14 @@ import { Store } from '../../utils/store';
 import { Typography } from '@mui/material';
 import Budget from '../../APIs/budget';
 import AddTransaction from './TransactoinModel';
+import * as constants from '../../constants';
 
 function Navbar() {
   const store = Store.useContainer();
 
   const month = store.month.getMonth();
   const year = store.month.getFullYear();
-
-  const monthName = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
+  const monthName = constants.monthName[month];
 
   useEffect(() => {
     try {
@@ -53,7 +40,7 @@ function Navbar() {
           fontWeight={700}
           sx={{ flexGrow: 1, textAlign: 'center' }}
         >
-          Monthly Overview for {monthName[month]} {year}
+          Monthly Overview for {monthName} {year}
         </Typography>
 
         {/* 
