@@ -30,15 +30,18 @@ function Navbar() {
   ];
 
   useEffect(() => {
-    const getBudget = async () => {
-      try {
-        const data = await Budget.get(`${month}${year}`);
+    try {
+      const res = Budget.get(`${month}${year}`);
+      res.then((data) => {
         store.setTransactions(data.budget?.Transactions || []);
         store.setBudget(data.budget);
-      } catch (error) {}
-    };
+      });
+    } catch (error) {}
 
-    getBudget();
+    return () => {
+      store.setTransactions([]);
+      store.setBudget({});
+    };
   }, [month, year]);
 
   return (

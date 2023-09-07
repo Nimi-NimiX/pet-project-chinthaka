@@ -8,14 +8,12 @@ const Dashboard = () => {
 
   // Get categories when component mounts and set store
   useEffect(() => {
-    const getCategories = async () => {
-      try {
-        const data = await Category.get();
+    try {
+      const res = Category.get();
+      res.then((data) => {
         store.setCategories(data.categories);
-      } catch (error) {}
-    };
-
-    getCategories();
+      });
+    } catch (error) {}
 
     return () => {
       store.setCategories([]);
