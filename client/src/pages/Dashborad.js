@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import Header from '../components/header/Header';
+import Overview from '../components/Overview';
 import { Store } from '../utils/store';
 import Category from '../APIs/category';
+import styled from '@emotion/styled';
+import { Box } from '@mui/system';
 
 const Dashboard = () => {
   const store = Store.useContainer();
@@ -23,8 +26,23 @@ const Dashboard = () => {
   return (
     <>
       <Header />
+      <StyledBox>
+        <Overview />
+      </StyledBox>
     </>
   );
 };
 
 export default Dashboard;
+
+const StyledBox = styled(Box)`
+  background-color: #d9d9d9;
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  padding: 20px;
+  gap: 20px;
+  border-radius: 3px;
+  align-items: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+`;
