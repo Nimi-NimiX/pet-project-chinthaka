@@ -11,7 +11,7 @@ const budget = {
   },
   set: async (id, budget) => {
     try {
-      const res = await axios.post(`${BASE_URL}/budget${id}`, {
+      const res = await axios.post(`${BASE_URL}/budget/${id}`, {
         estimatedBudget: budget,
       });
       return res.data;
