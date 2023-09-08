@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -24,12 +24,13 @@ import LoadingButton from '@mui/lab/LoadingButton';
 function AddTransaction() {
   // Get store values
   const store = Store.useContainer();
+  const month = store.month;
 
   // states for modal and form
   const [open, setOpen] = useState(false);
   const [type, setType] = useState(Type.INCOME);
   const [category, setCategory] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(month);
   const [adding, setAdding] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -39,8 +40,12 @@ function AddTransaction() {
     setOpen(false);
     setType('I');
     setCategory('');
-    setSelectedDate(new Date());
   };
+
+  // display datepicker month according to selected month
+  useEffect(() => {
+    setSelectedDate(month);
+  }, [month]);
 
   // Add transaction API call
   const addTransaction = (e) => {
