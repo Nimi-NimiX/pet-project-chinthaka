@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Header from '../components/header/Header';
 import Overview from '../components/Overview';
+import Analytics from '../components/Analytics';
 import { Store } from '../utils/store';
 import Category from '../APIs/category';
 import styled from '@emotion/styled';
@@ -28,6 +29,7 @@ const Dashboard = () => {
       <Header />
       <StyledBox>
         <Overview />
+        <Analytics />
       </StyledBox>
     </>
   );
