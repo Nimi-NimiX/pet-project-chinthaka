@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PieChart from './PieChart';
-import { Box, FormControl, InputLabel, Select } from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import calculate from './calculate';
+import { Store } from '../../../utils/store';
+import { pieTimeFrames } from '../../../constants';
 
 function PieComponent() {
-  const [data, setData] = useState([
-    { value: 1048, name: 'Search Engine' },
-    { value: 735, name: 'Direct' },
-    { value: 580, name: 'Email' },
-    { value: 484, name: 'Union Ads' },
-    { value: 300, name: 'Video Ads' },
-  ]);
+  // initialize store
+  const store = Store.useContainer();
+
+  // get data from store
+  const transactions = store.transactions;
+  const categories = store.categories;
+
+  // set data for chart
+  const [data, setData] = useState([]);
+  const [timeFrame, setTimeFrame] = useState(pieTimeFrames[0].value); // default value set to monthly
+
+  // calculate chart when transactions changes
+  useEffect(() => {
+    setData(calculate(transactions, categories, timeFrame));
+  }, [transactions, categories, timeFrame]);
 
   return (
     <>
+      {/* select time frame for pie chart */}
       <Box sx={BoxStyles}>
         <FormControl size="small" fullWidth>
           <InputLabel>Timeframe</InputLabel>
@@ -20,9 +32,19 @@ function PieComponent() {
             sx={{ width: '150px' }}
             label="Timeframe"
             defaultValue=""
-          ></Select>
+            onChange={(e) => setTimeFrame(e.target.value)}
+            value={timeFrame}
+          >
+            {pieTimeFrames.map((timeFrame) => (
+              <MenuItem key={timeFrame.value} value={timeFrame.value}>
+                {timeFrame.label}
+              </MenuItem>
+            ))}
+          </Select>
         </FormControl>
       </Box>
+
+      {/* render pie chart */}
       <PieChart data={data} />
     </>
   );

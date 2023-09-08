@@ -11,25 +11,25 @@ const BarComponent = () => {
   const transactions = store.transactions;
 
   // time frame state
-  const [timeframe, setTimeframe] = useState(constants.barTimeFrames[0].value);
+  const [timeFrame, setTimeFrame] = useState(constants.barTimeFrames[0].value); // default value set to weekly
   const [source, setSource] = useState([]);
 
   // calculate data when transactions or timeframe changes
   useEffect(() => {
-    setSource(calculate(transactions, timeframe));
-  }, [transactions, timeframe]);
+    setSource(calculate(transactions, timeFrame));
+  }, [transactions, timeFrame]);
 
   return (
     <>
+      {/* select time frame for bar chart */}
       <Box sx={BoxStyles}>
         <FormControl size="small" fullWidth>
           <InputLabel>Timeframe</InputLabel>
           <Select
             sx={{ width: '150px' }}
             label="Timeframe"
-            defaultValue=""
-            value={timeframe}
-            onChange={(e) => setTimeframe(e.target.value)}
+            value={timeFrame}
+            onChange={(e) => setTimeFrame(e.target.value)}
           >
             {constants.barTimeFrames.map((timeFrame) => (
               <MenuItem value={timeFrame.value} key={timeFrame.value}>

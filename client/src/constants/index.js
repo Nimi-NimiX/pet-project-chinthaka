@@ -23,3 +23,10 @@ export const barTimeFrames = [
     label: 'Daily',
   },
 ];
+
+export const pieTimeFrames = [
+  {
+    value: 'month',
+    label: 'Month',
+  },
+];
