@@ -12,3 +12,21 @@ export const monthName = [
   'November',
   'December',
 ];
+
+export const barTimeFrames = [
+  {
+    value: 'weekly',
+    label: 'Weekly',
+  },
+  {
+    value: 'daily',
+    label: 'Daily',
+  },
+];
+
+export const pieTimeFrames = [
+  {
+    value: 'month',
+    label: 'Month',
+  },
+];
