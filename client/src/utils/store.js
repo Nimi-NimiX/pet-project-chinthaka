@@ -17,7 +17,6 @@ function useStore() {
 
   // this function edits transaction in existing list
   function editTransaction(transaction) {
-    console.log(transaction);
     const newTransactions = [...transactions];
     const index = newTransactions.findIndex((t) => t.id === transaction.id);
     newTransactions[index].amount = Number(transaction.amount); // TODO : fix returning values type from backend
