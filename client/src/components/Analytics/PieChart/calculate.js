@@ -2,10 +2,8 @@ import types from '../../../constants/type';
 
 const pieDataCal = (transactions, categories) => {
   try {
-    let sorted = [...transactions];
-
     // filter transactions to only keep expenses
-    sorted = sorted.filter((transaction) => {
+    let sorted = [...transactions].filter((transaction) => {
       return transaction.type === types.EXPENSE;
     });
 

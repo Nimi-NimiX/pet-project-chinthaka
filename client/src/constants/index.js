@@ -30,3 +30,16 @@ export const pieTimeFrames = [
     label: 'Month',
   },
 ];
+
+export const types = [
+  {
+    value: 'E',
+    label: 'Expense',
+    color: 'error',
+  },
+  {
+    value: 'I',
+    label: 'Income',
+    color: 'success',
+  },
+];
