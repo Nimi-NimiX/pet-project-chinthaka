@@ -15,6 +15,25 @@ function useStore() {
     setBudget(reCalculateBudget(newTransaction, budget));
   }
 
+  // this function edits transaction in existing list
+  function editTransaction(transaction) {
+    console.log(transaction);
+    const newTransactions = [...transactions];
+    const index = newTransactions.findIndex((t) => t.id === transaction.id);
+    newTransactions[index].amount = Number(transaction.amount); // TODO : fix returning values type from backend
+    newTransactions[index].remarks = transaction.remarks;
+    newTransactions[index].categoryId = Number(transaction.categoryId); // TODO : fix returning values type from backend
+    setTransactions(newTransactions);
+    setBudget(reCalculateBudget(newTransactions, budget));
+  }
+
+  // this function deletes transaction from existing list
+  function deleteTransaction(id) {
+    const newTransactions = transactions.filter((t) => t.id !== id);
+    setTransactions(newTransactions);
+    setBudget(reCalculateBudget(newTransactions, budget));
+  }
+
   return {
     month,
     setMonth,
@@ -25,6 +44,8 @@ function useStore() {
     transactions,
     addTransaction,
     setTransactions,
+    editTransaction,
+    deleteTransaction,
   };
 }
 
