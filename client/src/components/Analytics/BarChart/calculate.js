@@ -4,7 +4,7 @@ export default function calculate(transactions, timeframe) {
   const data = [];
 
   // sort array by dates
-  let sorted = transactions.sort((a, b) => {
+  let sorted = [...transactions].sort((a, b) => {
     return new Date(a.date) - new Date(b.date);
   });
 
